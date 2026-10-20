@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You</title>
+  <style>
+    :root {
+      --bg-color: #f7f3ed;
+      --card-bg: #ffffff;
+      --primary-color: #a35d43;
+      --accent-color: #d1825c;
+      --text-main: #3d2f2b;
+      --text-muted: #7d6b63;
+      --border-color: #ebdcd0;
+      --shadow-color: rgba(61, 47, 43, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      font-family: Georgia, serif;
+      font-size: 2.25rem;
+      font-weight: normal;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.75rem 1.5rem;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      text-align: center;
+    }
+
+    .timer-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .timer-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .timer-value {
+      font-family: Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .timer-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+    }
+
+    .carousel-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .carousel-text {
+      font-family: Georgia, serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--text-main);
+      min-height: 4.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-button {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--primary-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-button:hover {
+      background-color: var(--bg-color);
+      border-color: var(--accent-color);
+    }
+
+    .carousel-indicator {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Our Journey</h1>
+      <p class="subtitle">Together for</p>
+    </header>
+
+    <section class="card">
+      <div class="timer-grid">
+        <div class="timer-unit">
+          <span class="timer-value" id="years">0</span>
+          <span class="timer-label">Years</span>
+        </div>
+        <div class="timer-unit">
+          <span class="timer-value" id="days">0</span>
+          <span class="timer-label">Days</span>
+        </div>
+        <div class="timer-unit">
+          <span class="timer-value" id="hours">0</span>
+          <span class="timer-label">Hours</span>
+        </div>
+        <div class="timer-unit">
+          <span class="timer-value" id="minutes">0</span>
+          <span class="timer-label">Minutes</span>
+        </div>
+        <div class="timer-unit">
+          <span class="timer-value" id="seconds">0</span>
+          <span class="timer-label">Seconds</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="carousel-container">
+        <button class="nav-button" id="prevBtn" aria-label="Previous">&lt;</button>
+        <div class="carousel-text" id="carouselText"></div>
+        <button class="nav-button" id="nextBtn" aria-label="Next">&gt;</button>
+      </div>
+      <div class="carousel-indicator" id="carouselIndicator"></div>
+    </section>
+
+    <footer>
+      <p>&hearts;</p>
+    </footer>
+  </div>
+
+  <script>
+    const START_DATE = new Date("2023-10-01T00:00:00");
+
+    const messages = [
+      "Thank you for making every day warmer and brighter.",
+      "I love all the little moments we share together.",
+      "Looking forward to creating many more memories with you.",
+      "You are my favorite part of every day."
+    ];
+
+    let currentMessageIndex = 0;
+
+    function updateCounter() {
+      const now = new Date();
+      const diff = now - START_DATE;
+
+      if (diff < 0) return;
+
+      const secondsTotal = Math.floor(diff / 1000);
+      const minutesTotal = Math.floor(secondsTotal / 60);
+      const hoursTotal = Math.floor(minutesTotal / 60);
+      const daysTotal = Math.floor(hoursTotal / 24);
+
+      const years = Math.floor(daysTotal / 365);
+      const days = daysTotal % 365;
+      const hours = hoursTotal % 24;
+      const minutes = minutesTotal % 60;
+      const seconds = secondsTotal % 60;
+
+      document.getElementById("years").textContent = years;
+      document.getElementById("days").textContent = days;
+      document.getElementById("hours").textContent = hours;
+      document.getElementById("minutes").textContent = minutes;
+      document.getElementById("seconds").textContent = seconds;
+    }
+
+    function renderMessage() {
+      const textElement = document.getElementById("carouselText");
+      const indicatorElement = document.getElementById("carouselIndicator");
+
+      textElement.style.opacity = 0;
+
+      setTimeout(() => {
+        textElement.textContent = messages[currentMessageIndex];
+        indicatorElement.textContent = `${currentMessageIndex + 1} / ${messages.length}`;
+        textElement.style.opacity = 1;
+      }, 150);
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      currentMessageIndex = (currentMessageIndex - 1 + messages.length) % messages.length;
+      renderMessage();
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+      renderMessage();
+    });
+
+    updateCounter();
+    setInterval(updateCounter, 1000);
+    renderMessage();
+  </script>
+</body>
+</html>
